@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Web to Android APK
 
 on:
   push:
@@ -11,11 +11,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies & Build Web App
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Setup Capacitor and Android Platform
+        run: |
+          npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
+
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.staffmanagement.app",
+            "appName": "StaffManagement",
+            "webDir": "dist",
+            "bundledWebRuntime": false
+          }
+          EOF
+
+          npx cap add android
+          npx cap sync android
 
       - name: Fix Kotlin Conflict in Gradle
         run: |
@@ -30,6 +56,7 @@ jobs:
 
       - name: Build Android APK via Gradle
         run: |
+          cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -37,4 +64,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: StaffManagement-App
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
