@@ -1,0 +1,6 @@
+{
+  "name": "ScrimPay",
+  "description": "Esports scrim staff payment and record tracker with dynamic shift parsing, penalty/bonus management, UPI QR generation, and WhatsApp summaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
